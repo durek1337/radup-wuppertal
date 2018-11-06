@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+    <head>
+    <link rel="manifest" href="onesignal/manifest.json">
+    <title>Radup!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Security-Policy" content="default-src * gap:; style-src * 'unsafe-inline'; media-src * 'unsafe-inline'; img-src * data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; connect-src *">
+        <script type="text/javascript" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+        <script type="text/javascript" src="scripts/jquery-2.2.3.js"></script>
+        <script type="text/javascript" src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.js"></script>
+
+        <script type="text/javascript" src="scripts/socket.io-2.0.4.js"></script>
+        <script type="text/javascript" src="scripts/swiper.jquery.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery.qrcode-0.14.0.min.js"></script>
+        <script type="text/javascript" src="scripts/exif.js"></script>
+        <script type="text/javascript" src="scripts/db.js"></script>
+
+        <script type="text/javascript" src="scripts/jquery.outside.js"></script>
+        <script type="text/javascript" src="scripts/jquery.initialize.js"></script>
+        <script type="text/javascript" src="scripts/jquery.croppie.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery.cui.js"></script>
+        <script type="text/javascript" src="scripts/config.js"></script>
+        <script type="text/javascript" src="scripts/global.js"></script>
+        <script type="text/javascript" src="scripts/visualisation.js"></script>
+        <script type="text/javascript" src="scripts/app.js"></script>
+        <script type="text/javascript" src="scripts/notification.js"></script>
+        <script type="text/javascript" src="scripts/intro.js"></script>
+        <script type="text/javascript" src="scripts/map.js"></script>
+        <script type="text/javascript" src="scripts/server.js"></script>
+        <script type="text/javascript" src="scripts/chat.js"></script>
+        <script type="text/javascript" src="scripts/user.js"></script>
+        <script type="text/javascript" src="scripts/memory.js"></script>
+        <script type="text/javascript" src="scripts/jquery.geo-1.0.0-rc1.2.js"></script>
+        <script type="text/javascript" src="scripts/admin.js"></script>
+        <script type="text/javascript" src="scripts/hybrid.js"></script>
+        <script type="text/javascript" src="scripts/init.js"></script>
+
+        <link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.css" />
+
+        <link rel="stylesheet" href="themes/radup.css" />
+        <link rel="stylesheet" href="themes/swiper.css" />
+        <link rel="stylesheet" href="themes/croppie.css" />
+        <link rel="stylesheet" href="themes/custom.css" />
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16">
+
+        <script type="text/javascript">
+
+        /* Globale Variablen */
+        var socket = null, // socket.io - socket
+        currentLocation = null; // Aktueller Standort
+        </script>
+
+    </head>
+    <body>
+        <div data-role="page" data-theme="b" id="home">
+          <div class="swiper-container" id="intro">
+            <div class="swiper-wrapper">
+
+                <div class="swiper-slide swiper-no-swiping" style="overflow:auto;">
+                    <div style="margin:auto;display:block;color:#bfbfbf;">
+                    <img src="images/radup_logo.svg" style="width:70%" alt="RadUp!" /><br>
+                    <form id="loginform" action="#" style="text-align:left;padding:20px;">
+                        <span style="font-size:80%">Matrikelnummer*</span><br>
+                        <input type="text" name="matrikel" class="loginfield" data-role="none" autocomplete="off" /><br>
+                        <span style="font-size:80%">Passwort*</span><br>
+                        <input type="password" name="pw" class="loginfield" data-role="none" autocomplete="off" /><br><br>
+                        <input type="submit" data-shadow="false" class="cui-btn-medium" value="Anmelden" />
+                        <label style="white-space:nowrap;width:100%;text-align:center;">Passwort merken<input data-role="none" id="rmcheckbox" type="checkbox" name="remember" /></label>
+                    </form>
+                    <br>
+
+                    <a href="javascript:intro.swiper.slideTo(intro.swiper.slides.length-1);">Registrieren</a>
+                    <br><br><br><br>
+                    <a href="javascript:user.forgotPassword()" style="font-size:75%">Passwort vergessen?</a>
+
+                    </div>
+
+                </div>
+                <div class="swiper-slide swiper-no-swiping" style="overflow:auto;">
+                    <div style="margin:auto;display:block;color:#bfbfbf;">
+                    <form id="registerform" action="#" style="text-align:left;padding:20px;">
+                    <input type="hidden" name="gender" value="-1" />
+                    <img src="images/icons/register_arrow.svg" onclick="intro.swiper.slideTo(intro.swiper.slides.length-2)" style="width:40px;height:40px;position:absolute;" alt="" />
+                    <div class="userpic">*</div>
+                        <input type="hidden" name="pic" value="" />
+                        <span style="font-size:80%">Vorname*</span><br>
+                        <input type="text" name="forename" class="loginfield" data-role="none" /><br>
+                        <span style="font-size:80%">Nachname*</span><br>
+                        <input name="surname" class="loginfield" data-role="none" /><br>
+                        <span style="font-size:80%">Matrikelnummer*</span><br>
+                        <input type="text" name="id" class="loginfield" data-role="none" /><br>
+                        <span style="font-size:80%">Adresse*</span><br>
+                        <input id="registerform-address" class="loginfield" data-role="none" value="" autocomplete="off" readonly /><br>
+                        <span style="font-size:80%">Passwort*</span><br>
+                        <input type="password" name="pw" class="loginfield" data-role="none" autocomplete="off" /><br>
+
+                        <input type="submit" data-shadow="false" class="cui-btn-medium" value="Registrieren" />
+
+                    </form>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Add Pagination -->
+            <div class="swiper-pagination swiper-pagination-h"></div>
+          </div>
+
+        </div>
+
+        <div id="tpl"><!-- Template für alle Seitenheader -->
+            <div id="pageheader">
+            <div class="ui-btn-left">
+                  <a href="#leftpanel" class="ui-btn ui-nodisc-icon cui-icon-smallbars ui-btn-icon-notext cui-headericon"></a>
+            </div>
+            <div class="ui-btn-right">
+            </div>
+            </div>
+        </div>
+
+        <div id="filteredbikes" data-role="page">
+            <div data-role="header" data-theme="a" data-position="fixed">
+             <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+             <span class="ui-title">Bikes</span>
+            </div>
+        <div data-role="content" style="margin:0;padding:0;"></div>
+
+        </div>
+
+        <div id="bikes" data-role="page">
+            <div data-role="header" data-theme="a" data-position="fixed">
+             <span class="ui-title"><img class="headerlogo" src="images/logo_header.svg" alt="RadUp!" height="25" /></span>
+             <div data-role="navbar" style="margin:0;" data-position-fixed="true">
+                        <ul data-activetab="1">
+                            <li><a href="#search">KARTE</a></li>
+                            <li><a href="#" class="ui-btn-active ui-state-persist">BIKES</a></li>
+                        </ul>
+             </div>
+            </div>
+        <div data-role="content" style="margin:0;padding:0;"></div>
+
+        </div>
+
+        <div data-role="page" id="search">
+            <div data-role="header" data-theme="a" data-position="fixed">
+              <span class="ui-title"><img class="headerlogo" src="images/logo_header.svg" alt="RadUp!" height="25" /></span>
+              <a href="#searchpanel" class="ui-btn ui-nodisc-icon ui-btn-icon-notext cui-icon-filter cui-headericon cui-headericon-right"></a>
+
+             <div data-role="navbar" style="margin:0;" data-position-fixed="true">
+                        <ul>
+                            <li><a href="#" class="ui-btn-active ui-state-persist">KARTE</a></li>
+                            <li><a href="#bikes">BIKES</a></li>
+                        </ul>
+             </div>
+            </div>
+
+
+            <div data-role="main" style="display:flex;flex-direction:column;" >
+
+                    <div id="map">
+
+                    </div>
+                    <div id="map-sugg"></div>
+
+            </div>
+            <div data-role="footer" data-position="fixed" style="display:flex;flex-direction:row;overflow:visible;background:#fff;">
+                <input type="text" id="map-input" name="searchbox" placeholder="Adresse eingeben" data-role="none" data-theme="b" />
+                <a href="javascript:map.getCurrentLocation(function(){map.$dom.geomap('option','center',[currentLocation.lon, currentLocation.lat]);});" data-role="none"><img src="images/icons/icon_location.svg" style="position:absolute;height:25px;top:10px;right:10px;" alt="Zu aktueller Position" /></a>
+            </div>
+
+            <div id="map-bikeinfo">
+                    <div class="arrowicon-up"></div>
+                    <div style="width:320px;margin-left:auto;margin-right:auto;">
+                    <div style="height:60px;width:100%;padding-top:30px;padding-bottom:10px;display:flex;">
+
+                            <div style="margin-right:auto;">
+                                <div data-fillitem="pic" data-fillprop-link="true" style="width:60px;height:60px;"></div>
+                            </div>
+                            <div>
+                                <span data-fillitem="name"></span><br><img src="images/icons/pin_location.svg" alt="" class="map-info-locationpin" /> <i class="map-info-location"></i>
+                            </div>
+                            <div style="margin-left:auto;font-size:10pt;">
+                                <div style="width:14px;height:14px;border-radius:50%;background-color:#97be09;margin-left:auto;margin-right:auto;" data-subject="point"></div>
+                                <span data-subject="days"></span>
+                            </div>
+                        </div>
+                        <div id="map-bikeinfo-bottom">
+                            <div style="display:flex;">
+                                <div style="margin-right:auto;">Pedelec Nr. <span data-subject="id"></span><br><span data-subject="frame"></span>&quot; Rahmen</div>
+                                <div style="margin-left:auto;">verf&uuml;gbar ab<br><span data-subject="available"></span></div>
+                            </div>
+                                <button data-theme="b" data-shadow="false" class="cui-btn-medium"><img src="images/icons/mail.svg" style="height:30px;" alt="" /> <span>Mail</span></button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div id="map-stationinfo">
+                    <div style="width:320px;margin-left:auto;margin-right:auto;">
+                        <div style="height:60px;width:100%;padding-top:30px;padding-bottom:10px;display:flex;">
+
+                            <div style="margin-right:auto;width:60px;height:60px;" data-fillitem="pic" data-fillprop-link="true"></div>
+                            <div>
+                                <span data-fillitem="name"></span><br><img src="images/icons/pin_location.svg" alt="" class="map-info-locationpin" /> <i class="map-info-location" data-fillitem="address"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="map-chargeinfo">
+                    <div style="width:320px;margin-left:auto;margin-right:auto;">
+                        <div style="height:60px;width:100%;padding-top:30px;padding-bottom:10px;display:flex;">
+
+                            <div style="margin-right:auto;width:60px;height:60px;" data-fillitem="pic" data-fillprop-link="true"></div>
+                            <div>
+                                <span data-fillitem="name"></span><br><img src="images/icons/pin_location.svg" alt="" class="map-info-locationpin" /> <i data-fillitem="address" class="map-info-location"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div id="map-repairinfo">
+                    <div style="width:320px;margin-left:auto;margin-right:auto;">
+                        <div style="height:60px;width:100%;padding-top:30px;padding-bottom:10px;display:flex;">
+
+                            <div style="margin-right:auto;width:60px;height:60px;" data-fillitem="pic" data-fillprop-link="true"></div>
+                            <div>
+                                <span data-fillitem="name"></span><br><img src="images/icons/pin_location.svg" alt="" class="map-info-locationpin" /> <i data-fillitem="address" class="map-info-location"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+        <div data-role="panel" data-animate="false" data-position-fixed="true" id="searchpanel" data-position="right" data-display="push" data-theme="b">
+        <div style="padding:20px;">
+                Klicke auf die Icons, um Filter zu (de)aktivieren.
+                <div id="filtericons">
+                    <div class="filtericon" data-fitem="bike"><i>Radup!</i></div>
+                    <div class="filtericon" data-fitem="charge"><span>Ladestation</span></div>
+                    <div class="filtericon" data-fitem="repair">Werkstatt</div>
+                    <div class="filtericon" data-fitem="station">Rad-Verleih</div>
+                </div>
+        </div>
+        </div>
+
+        </div>
+
+        <div data-role="page" id="mails">
+            <div data-role="header" data-theme="a" data-position="fixed"><span class="ui-title">Mails</span></div>
+                <div data-role="content" style="padding:0;margin:0;">
+
+                </div>
+        </div>
+
+        <div data-role="page" id="chat">
+            <div data-role="header" data-theme="a" data-position="fixed">
+            <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            <span class="ui-title">Konversation</span>
+            <div data-role="navbar" style="display:flex;padding:10px;background-color:#fff;border-bottom:1px solid #c0c0c0;"></div>
+            </div>
+
+            <div data-role="content"></div>
+
+            <div data-role="footer" style="background:#f0f0f0;">
+                <form id="chat-input" onsubmit="chat.sendMsg(this.msg.value);this.msg.value='';this.msg.focus();return false;">
+                    <input type="text" data-role="none" name="msg" value="" autocomplete="off" placeholder="Nachricht..." />
+                    <button class="submitbutton iconbutton" data-theme="b" data-shadow="false"></button>
+                </form>
+            </div>
+        </div>
+        <div data-role="page" id="routes">
+            <div data-role="header" data-theme="a" data-position="fixed">
+                <span class="ui-title">Routen</span></div>
+                <div data-role="content" style="display:flex">
+                    <div style="margin:auto;width:300px;font-size:13pt;">
+                        <div style="font-size:16pt;text-align:center;width:100%;">
+                            Viele Wege f&uuml;hren nach Rom!<br>
+                            <img src="images/routes.svg" alt="" style="width:140px;padding:10px;"/>
+                        </div>
+
+                        Wir haben Routen zusammengestellt,
+                        die sich f&uuml;rs Radeln zur Uni besonders gut eignen!
+                        Ausprobieren lohnt sich dank folgender Vorteile:<br>
+                        <ul class="checklist">
+                            <li><div></div>weniger Verkehr</li>
+                            <li><div></div>Nutzung der Einbahnstra&szlig;en<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gegen Fahrtrichtung</li>
+                            <li><div></div>weniger Ampeln</li>
+                        </ul>
+                        <button data-theme="b" data-shadow="false" onclick="app.info('Die Routen werden erg&auml;nzt sobald die Vektordaten vorliegen')">Los geht&apos;s!</button>
+                    </div>
+                </div>
+        </div>
+        <div data-role="page" id="account">
+
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Konto</span>
+                <a href="#config" class="ui-btn ui-nodisc-icon ui-btn-icon-notext cui-icon-edit cui-headericon cui-headericon-right"></a>
+
+                <div data-role="navbar" style="margin:0;">
+                        <ul>
+                            <li><a href="#" class="ui-btn-active ui-state-persist">PROFIL</a></li>
+                            <li><a href="#config">EINSTELLUNGEN</a></li>
+                        </ul>
+                </div>
+
+
+            </div>
+            <div data-role="content" style="display:flex">
+                <div style="width:320px;margin:auto;text-align:center;">
+                    <div class="userprofile">
+
+                    </div>
+                    <button data-theme="b" onclick="app.confirm('Durch das Ausloggen werden alle Einstellungen zurückgesetzt und bestehende Verläufe entfernt. Wollen Sie sich ausloggen?', function(b){if(b)user.logout()})" data-shadow="false" class="cui-btn-medium">Abmelden</button>
+                </div>
+            </div>
+
+
+        </div>
+        <div data-role="page" id="config">
+
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Konto</span>
+
+                <div data-role="navbar" style="margin:0;">
+                        <ul>
+                            <li><a href="#account">PROFIL</a></li>
+                            <li><a href="#" class="ui-btn-active ui-state-persist">EINSTELLUNGEN</a></li>
+                        </ul>
+                </div>
+
+
+            </div>
+            <div data-role="content">
+
+                    <div data-role="collapsibleset" data-inset="true" data-enhanced="true" data-iconpos="right" data-collapsed-icon="customarrow-d" data-mini="true" data-expanded-icon="customarrow-u">
+                    <div data-role="collapsible" data-collapsed="false">
+                        <h3>Profil</h3>
+                        <ul>
+                            <li><a href="#" id="config-changepic">Profilbild ändern</a></li>
+                        </ul>
+                    </div>
+                      <div data-role="collapsible" data-collapsed="false">
+                        <h3>Fahrrad</h3>
+                            <ul>
+                                <li><a href="#" id="config-bikelocation">Fahrradlokation festlegen</a></li>
+                            </ul>
+                      </div>
+                      <div data-role="collapsible" >
+                        <h3>Konto</h3>
+                            <ul>
+                                <li onclick="user.changePassword()"><a href="#">Passwort &auml;ndern</a></li>
+                            </ul>
+                      </div>
+                      <div data-role="collapsible" >
+                        <h3>Anwendung</h3>
+                            <ul>
+                                <li onclick="app.confirm('Nachrichten und Einstellungen werden vom Ger&auml;t entfernt. Vergangegene Nachrichtenverl&auml;ufe, welche evtl. nicht mehr auf dem Server gespeichert sind gehen dadurch verloren.',function(val){if(val)memory.truncate();})"><a href="#">Lokalen Speicher l&ouml;schen</a></li>
+                                <li onclick="if(user.config.notifications == 1) app.confirm('Aktuell sind Benachrichtigungen auf diesem Client aktiviert. Deaktivieren?', function(val){if(val) notification.unsubscribe()}); else notification.subscribe();"><a href="#">Benachrichtigungen</a></li>
+                            </ul>
+
+                      </div>
+
+                    </div>
+
+
+
+            </div>
+
+
+        </div>
+        <div data-role="page" id="profile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Profil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="userprofile" style="width:320px;margin:auto;text-align:center;">
+
+                </div>
+            </div>
+        </div>
+
+
+        <div data-role="page" id="bikeprofile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Fahrradprofil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="bikeprofile" style="width:320px;margin:auto;text-align:center;">
+                    <div data-fillitem="pic" data-fillprop-openpic="true"></div><br>
+                    <span data-fillitem="desc"></span>
+                    <div class="bikeprofile-pics"></div><br>
+                    <div data-fillitem="sponsorbanner"></div><br>
+                    <table class="bikeprofile-props"></table><br>
+                    Ist aktuell bei...
+                    <div class="bikeprofile-holder"></div>
+
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="stationprofile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Stationsprofil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="stationprofile" style="width:320px;margin:auto;text-align:center;">
+                    <div data-fillitem="pic" data-fillprop-openpic="true"></div><br>
+                    <b data-fillitem="name"></b><br>
+                    <div data-fillitem="desc"></div>
+
+                    <div class="stationprofile-bikes"></div>
+
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="repairprofile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Werkstattprofil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="stationprofile" style="width:320px;margin:auto;text-align:center;">
+                    <div data-fillitem="pic" data-fillprop-openpic="true"></div><br>
+                    <b data-fillitem="name"></b><br>
+                    <div data-fillitem="desc"></div>
+
+                    <div class="repairprofile-bikes"></div>
+
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="chargeprofile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Ladestationsprofil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="chargeprofile" style="width:320px;margin:auto;text-align:center;">
+                    <div data-fillitem="pic" data-fillprop-openpic="true"></div><br>
+                    <b data-fillitem="name"></b><br>
+                    <div data-fillitem="desc"></div>
+
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="sponsorprofile">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Sponsorprofil</span>
+                <a href="#" onclick="app.goPageBack();" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+            </div>
+            <div data-role="content" style="display:flex">
+                <div class="sponsorprofile" style="width:320px;margin:auto;text-align:center;">
+                    <b data-fillitem="name"></b><br>
+                    <div data-fillitem="banner" data-fillprop-elink="true"></div><br>
+                    <div data-fillitem="html"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div data-role="page" id="help">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Hilfe</span>
+
+            </div>
+             <div data-role="navbar" style="margin:0;" data-position-fixed="true">
+                <ul>
+                    <li><a href="#" class="ui-btn-active ui-state-persist">FAQ</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+             </div>
+
+        <div data-role="content" style="padding-top:15px;line-height:30px;">
+
+            <div style="width:320px;margin:auto;">
+                Hier findest du alle wichtigen Fragen, Antworten und Checklisten zu <i>Radup!</i>.<br>
+                Auch als <a href="#" data-theme="b"><img src="images/icons/pdf_green.svg" style="height:20px;vertical-align: middle;" alt="" /> PDF zum Ausdrucken</a>.<br>
+                &raquo; <a href="javascript:app.support()">Support kontaktieren</a>
+
+                <div data-role="collapsibleset" data-inset="true" data-enhanced="true" data-iconpos="right" data-collapsed-icon="customarrow-d" data-mini="true" data-expanded-icon="customarrow-u">
+                      <div data-role="collapsible"><!-- data-collapsed="false" hinzufügen, für den geöffneten Startzustand -->
+                        <h3>Was ist Radup?</h3>
+                        <i>Radup!</i> ist ein kollaborativer Pedelec-Verleih der an der Uni-Wuppertal auf Studenteninitiative entstanden ist.
+                        Studenten sollen zum Radfahren motiviert werden - denn viele lassen sich durch die Wuppertaler Berge abschrecken oder besitzen gar kein Fahrrad.
+                        Diese H&uuml;rde soll durch den Einsatz von Pedelecs, also Fahrr&auml;dern mit Elektrounterst&uuml;tzung , genommen werden.
+                      </div>
+                      <div data-role="collapsible" >
+                        <h3>Accordion</h3>
+                        Dies ist der Inhalt dieses Accordionpunktes. Alle anderen Inhalte werden ausgeblendet.<br>
+                        Durch die Eigenschaft des Ausbreitens und Zusammenziehens erlangte dieses Strukturelement seinen Namen analog zu dem Akkordeon (Instrument).
+                      </div>
+                      <div data-role="collapsible" >
+                        <h3>Platzhalter</h3>
+                        Dies ist ein Platzhalter und soll zeigen wie die Struktur aufgebaut ist um sp&auml;ter weitere Punkte einzuf&uuml;gen.
+                      </div>
+                    </div>
+            </div>
+
+        </div>
+        </div>
+
+        <div data-role="page" id="support" data-theme="b">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Support kontaktieren</span>
+
+            </div>
+             <div data-role="navbar" style="margin:0;" data-position-fixed="true">
+                <ul>
+                    <li><a href="#help">FAQ</a></li>
+                    <li><a href="#" class="ui-btn-active ui-state-persist">Support</a></li>
+                </ul>
+             </div>
+
+        <div data-role="content" style="padding-top:15px;line-height:30px;">
+
+            <div class="limiter">
+
+                <form action="#" id="supportform">
+                    <label for="type" class="select">Grund:</label>
+                    <select name="type"></select>
+                    <label for="subject">Kurzer Titel:</label>
+                    <input type="text" name="subject" value="">
+                    <label for="content">Beschreibung:</label>
+                    <textarea name="content"></textarea>
+                    <button>Bild hinzuf&uuml;gen...</button>
+                    <div id="supportform-pictures"></div>
+                    <input type="submit" value="Kontakt aufnehmen" />
+
+                </form>
+            </div>
+
+        </div>
+        </div>
+
+        <div data-role="page" id="raiseup">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <span class="ui-title">Raise Up</span>
+            </div>
+        <div data-role="content" style="display:flex">
+        <div style="margin:auto;width:320px;text-align:center;">
+            <span style="font-size:120%">Wir brauchen deine Hilfe!</span><br>
+            <img src="images/bike.svg" style="width:60px;margin:10px;" alt="" /><br>
+            <div class="raiseup-digit">0</div><div class="raiseup-digit">0</div><div class="raiseup-digit">1</div><br>
+            <br>
+            <span style="text-align:left;display:block;">
+            <i>Radup!</i> ist ein Projekt, das von Studenten ehrenamtlich betrieben wird. Damit wir unsere Pedelec-Flotte weiter ausbauen k&ouml;nnen, brauchen wir Unterst&uuml;tzung in Form von engagierten Studenten, Koope-<br>
+            rationspartnern oder Sponsoren. Je mehr Leute von <i>Radup!</i> wissen, desto besser.
+            </span><br>
+            <br>
+            <b>Erz&auml;hle es weiter und unterst&uuml;tze uns!</b><br><br>
+            <div style="width:250px;display:flex;margin-left:30px;margin-right:40px;">
+                <div class="shareicon" style="margin-right:auto;background-image:url('images/icons/mail.svg');"></div>
+                <div class="shareicon" style="background-image:url('images/icons/facebook.svg');"></div>
+                <div class="shareicon" style="margin-left:auto;background-image:url('images/icons/piggybank.svg');"></div>
+            </div>
+
+        </div>
+        </div>
+        </div>
+
+        <div data-role="page" id="admin" data-theme="b">
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <a href="#" onclick="$(this).add($('#admin-overview, #admin-detail')).toggle()" id="admin-backbutton" style="display:none" class="ui-btn ui-nodisc-icon cui-headericon-left ui-btn-icon-notext cui-icon-leftarrow cui-headericon"></a>
+                <span class="ui-title">Administration</span>
+                <a href="#adminpanel" class="ui-btn ui-nodisc-icon ui-btn-icon-notext cui-icon-filter cui-headericon cui-headericon-right"></a>
+            </div>
+
+            <div data-role="content" style="padding:0;padding-top:15px;line-height:30px;" id="admin-overview">Admingelaber</div>
+            <div data-role="content" style="padding-top:15px;line-height:30px;" id="admin-detail">Admingelaber</div>
+
+            <div data-role="panel" data-animate="false" data-position-fixed="true" id="adminpanel" data-position="right" data-display="push" data-theme="b">
+                <div style="padding:20px;">
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div data-role="panel" id="leftpanel" data-position="left" data-display="overlay" data-theme="a"></div>
+        <img src="images/icons/refresh.svg" alt="" id="disconnect-icon" />
+        <img src="images/radup_logo_standalone.svg" alt="" id="raduplogo" />
+        <div id="dialogs">
+            <div id="dialog-croppie"></div>
+            <div id="dialog-croppie-edit"></div>
+            <div id="dialog-croppie-support">Bitte w&auml;hle den relevanten Bereich aus. Du kannst auch zwei Bereiche des gleichen Bildes auswählen.</div>
+            <div id="dialog-addresspicker"></div>
+            <div id="dialog-locationpicker"></div>
+            <div id="dialog-confirm"></div>
+            <div id="dialog-agb">Dies sind die AGB... vor Inbetriebnahme erg&auml;nzen</div>
+            <div id="dialog-abbort"></div>
+            <div id="dialog-info"></div>
+            <div id="dialog-alert"></div>
+        </div>
+        <div id="disable-overlay"></div>
+    </body>
+</html>

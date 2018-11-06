@@ -1,0 +1,19 @@
+Aktuelle Serverzeit: 2017-07-05 00:06:59
+Node.js-Version: v7.1.0
+Teste MySQL-Verbindung
+5.5.5-10.1.13-MariaDB
+MySQL-Verbindung erfolgreich!
+Trenne Verbindung und erzeuge MySQL-Verbindungspool
+Verbinde zum SMTP-Server...
+SMTP-Server ist bereit
+Server bereit: Port 3001
+wZJT72dNw5v12CWvAAAA: Neue Verbindung hergestellt (websocket)
+Versuche login mit ID 1245160
+User 1 wurde eingeloggt
+┌──────────┬─────────────────────────┬────────────────────┐
+│ ID       │ Socket-ID               │ Name               │
+├──────────┼─────────────────────────┼────────────────────┤
+│ 1        │ wZJT72dNw5v12CWvAAAA    │ Dominik Höltgen    │
+└──────────┴─────────────────────────┴────────────────────┘
+Daten sind 2 Zeichen lang
+Client-Synchronisationsstempel: 2017-07-05 00:04:02

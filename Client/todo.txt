@@ -1,0 +1,8 @@
+# Bugs #
+Logout und Login in einen anderen Nutzer löst Fehler durch fillUserData ausgelöst durch Datenpaket "userinfo" aus.
+"Mail"-Button aus dem Profil löst einen Fehler durch filluserData aus, wenn direkt zum Profil gelangt
+
+# Externe Unterstützung #
+- AGB
+- Werbetexte + Sponsoren
+- Physisches

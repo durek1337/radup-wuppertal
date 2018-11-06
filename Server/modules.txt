@@ -1,0 +1,7 @@
+cli-table
+colors
+express
+mysql
+socket.io
+nodemailer
+sha1

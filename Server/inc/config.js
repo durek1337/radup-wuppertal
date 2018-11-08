@@ -1,8 +1,8 @@
 module.exports = {
-    port : 3001, // Serverport f�r Verbindungen und Versionsabgleich
+    port : 3001, // Serverport für Verbindungen und Versionsabgleich
     usessl : false,
-    socketurl : "http://server.radup-wuppertal.de:3001", // Socket-URL f�r externe Zugriffe (Aktivierungslink). Muss mit der des Clients �bereinstimmen.
-    statickey : "qwKpmnHesjEYNVmp6tYqPUTw", // Dieser Wert wird verwendet um Aktivierungsschl�ssel algorithmisch zu generieren, um ihn nicht abspeichern zu m�ssen. Eine Ver�nderung bewirkt, dass bereits versendete Registrierungsschl�ssel ung�ltig werden.
+    socketurl : "http://server.radup-wuppertal.de:3001", // Socket-URL für externe Zugriffe (Aktivierungslink). Muss mit der des Clients übereinstimmen.
+    statickey : "qwKpmnHesjEYNVmp6tYqPUTw", // Dieser Wert wird verwendet um Aktivierungsschlüssel algorithmisch zu generieren, um ihn nicht abspeichern zu müssen. Eine Veränderung bewirkt, dass bereits versendete Registrierungsschlüssel ungültig werden.
     sql : {
         host: "127.0.0.1",//"127.0.0.1", // Eine Domain wie "localhost" erzeugt irgendwann eine Exception, IP nutzen bis Fix erscheint
         user: "root", // MySQL-Benutzername
@@ -13,7 +13,7 @@ module.exports = {
         senderMail : "system@radup-wuppertal.de", // Absender-Emailadresse
         receiverDomain : "uni-wuppertal.de", // Suffix nach Matrikelnummer@
         smtpConfig : {
-            pool: false, // Erzeugt einen Verbindungspool, wodurch nicht immer erneut mit dem smtp-server verbunden werden m�sste
+            pool: false, // Erzeugt einen Verbindungspool, wodurch nicht immer erneut mit dem smtp-server verbunden werden müsste
             host: 'in-v3.mailjet.com', // SMTP-Host
             port: 465, // SMTP-Port
             secure: true, // Benutze SSL
